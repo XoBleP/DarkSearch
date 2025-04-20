@@ -1,0 +1,4 @@
+Telethon
+aiogram
+requests
+aiocryptopay
