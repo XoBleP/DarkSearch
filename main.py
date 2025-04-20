@@ -199,15 +199,17 @@ async def confirm_subscription(callback: CallbackQuery):
     amount = float(amount)
     
     try:
+        # Создаем инвойс
         invoice = await crypto.create_invoice(
             asset="USDT",
             amount=amount,
             description=f"Подписка на {days} дней"
         )
         
-        pay_url = f"https://t.me/CryptoBot?start={invoice.invoice_id}"
-        invoice_id = invoice.invoice_id
+        # Формируем правильную платежную ссылку
+        pay_url = f"https://t.me/CryptoBot?start={invoice.bot_invoice_url.split('=')[-1]}"
         
+        invoice_id = invoice.invoice_id
         payments_db[invoice_id] = {
             "user_id": callback.from_user.id,
             "days": days,
