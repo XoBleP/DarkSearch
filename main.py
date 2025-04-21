@@ -1,3 +1,7 @@
+from fastapi import FastAPI
+import uvicorn
+import threading
+
 import logging
 import asyncio
 from aiogram import Bot, Dispatcher, types, F
@@ -26,7 +30,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Конфигурация
-BOT_TOKEN = "8094350096:AAFumOMe46G03GSeIRbdmZ4XkMOMPTnN4dQ"
+BOT_TOKEN = "8094350096:AAF_2dFYmMSxeB_F40dOX1e8XorhwbRAIyk"
 CRYPTO_PAY_TOKEN = "365966:AA7XaVNkTXI4wvOoUWIvHRboNJp1Ktk7ab7"
 API_ID = 28745328
 API_HASH = "99b7d5e0faedd6ddae2ebb8d792a763c"
@@ -199,17 +203,15 @@ async def confirm_subscription(callback: CallbackQuery):
     amount = float(amount)
     
     try:
-        # Создаем инвойс
         invoice = await crypto.create_invoice(
             asset="USDT",
             amount=amount,
             description=f"Подписка на {days} дней"
         )
         
-        # Формируем правильную платежную ссылку
-        pay_url = f"https://t.me/CryptoBot?start={invoice.bot_invoice_url.split('=')[-1]}"
-        
+        pay_url = f"https://t.me/CryptoBot?start={invoice.invoice_id}"
         invoice_id = invoice.invoice_id
+        
         payments_db[invoice_id] = {
             "user_id": callback.from_user.id,
             "days": days,
@@ -466,3 +468,20 @@ if __name__ == '__main__':
         asyncio.run(main())
     except (KeyboardInterrupt, SystemExit):
         logger.info("Бот остановлен")
+
+app = FastAPI()
+
+@app.get("/")
+def health_check():
+    return {"status": "bot_is_alive"}
+
+async def run_bot():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    # Запускаем бота в отдельном потоке
+    bot_thread = threading.Thread(target=asyncio.run, args=(run_bot(),), daemon=True)
+    bot_thread.start()
+    
+    # Запускаем HTTP-сервер (для Render)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
