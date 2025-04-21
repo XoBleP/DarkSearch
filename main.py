@@ -30,7 +30,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Конфигурация
-BOT_TOKEN = "8094350096:AAF_2dFYmMSxeB_F40dOX1e8XorhwbRAIyk"
+BOT_TOKEN = "8094350096:AAFumOMe46G03GSeIRbdmZ4XkMOMPTnN4dQ"
 CRYPTO_PAY_TOKEN = "365966:AA7XaVNkTXI4wvOoUWIvHRboNJp1Ktk7ab7"
 API_ID = 28745328
 API_HASH = "99b7d5e0faedd6ddae2ebb8d792a763c"
